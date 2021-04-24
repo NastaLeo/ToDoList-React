@@ -4,7 +4,7 @@ import {useState, useRef} from 'react';
 
 import './taskList.scss';
 
-export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplicate}) => {
+export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplicate, createDuplicateEdit}) => {
 
     const [taskName, setTaskName] = useState('');
     const input = useRef(null);
@@ -14,7 +14,7 @@ export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplic
 
         setTaskName(event.target.value); 
                
-        if (createDuplicate) {
+        if(createDuplicate) {
           resetDuplicate(taskType);
         }
 
@@ -40,7 +40,13 @@ export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplic
         <div className="task-list">
             {tasks.length > 0 && tasks.map((task, index) => {
                 return (
-                    <TaskItem key={index} task={task} number={index} priority={taskType} checked={task.checked}/>
+                    <TaskItem key={index} 
+                              task={task} 
+                              number={index} 
+                              priority={taskType} 
+                              checked={task.checked}
+                              createDuplicateEdit = {createDuplicateEdit}
+                />
                 )}
             )}
 
@@ -55,7 +61,7 @@ export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplic
                    onChange = {printTask}
                    onKeyDown = {saveTask}
             />
-           {createDuplicate &&
+           {(createDuplicate || createDuplicateEdit) &&
             <span className="task-list-error">You have yet the same task</span>}
 
         </div>
@@ -70,7 +76,8 @@ TaskList.propTypes = {
     taskType: PropTypes.string, 
     addTask: PropTypes.func,
     createDuplicate: PropTypes.bool,
-    resetDuplicate: PropTypes.func
+    resetDuplicate: PropTypes.func,
+    createDuplicateEdit: PropTypes.bool
 }
 
 

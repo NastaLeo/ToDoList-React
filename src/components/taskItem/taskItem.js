@@ -7,10 +7,10 @@ import cross from './cross.svg';
 import './taskItem.scss';
 
 
-export const TaskItem = ({ task, number, priority }) => {
+export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
   
-  const { deleteTask, editTask, checkTask, findDuplicateTask } = useContext(Context);
-  const [taskEditName, setTaskEditName] = useState('');
+  const { deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit } = useContext(Context);
+  const [taskEdit, setTaskEdit] = useState({name: '', checked: false});
 
 
   const input = useRef(null);
@@ -18,36 +18,33 @@ export const TaskItem = ({ task, number, priority }) => {
 
   const handleInput = (event) => {
 
-    const taskEditNameCopy = event.target.value;
-    setTaskEditName(taskEditNameCopy);
-    console.log(taskEditNameCopy)
+    const taskEditCopy = { ...taskEdit}
+    taskEditCopy.name = event.target.value.trim();
+    setTaskEdit(taskEditCopy);
 
-    if(editTask(task, number, priority, taskEditNameCopy)) {
-      console.log('copy')
+    editTask(task, number, priority, taskEditCopy);
 
-    } else if (!editTask(task, number, priority, taskEditNameCopy)) {
-      console.log('not copy')
-
+    if (createDuplicateEdit) {
+      resetDuplicateEdit(priority);
     }
 
-    // if (createDuplicate) {
-    //   resetDuplicate(taskType);
-    // }
-
-    setTaskEditName('')
   }
 
   
   const saveEditTask = (event) => {
 
     if(event.keyCode === 13){
-      
-      // if(!findDuplicateTask(task.name)){}
 
-      input.current.blur();
-      setTaskEditName(''); 
+      if(editTask(task, number, priority, taskEdit.name)){
 
-    }
+        input.current.blur() 
+        setTaskEdit('')
+        
+      } 
+
+      // else highlightDublicateEdit(priority);
+
+    } 
 
   }
   
@@ -57,11 +54,15 @@ export const TaskItem = ({ task, number, priority }) => {
     <section  className='item' id={number} >
 
       <div className='item-check'>
-        <input type='checkbox' checked={task.checked} 
+        <input type='checkbox' 
+               checked={task.checked} 
                onChange={() => checkTask(number, priority)}/>
       </div>
       
-      <input ref={input} value={task.name} onChange={handleInput} onKeyDown={saveEditTask}/>
+      <input ref={input} 
+             value={task.name} 
+             onChange={handleInput} 
+             onKeyDown={saveEditTask}/>
 
       <div className='item-icons'>
 

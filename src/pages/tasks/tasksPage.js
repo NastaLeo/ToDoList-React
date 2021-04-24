@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useState} from 'react';
 import {Context} from '../../context.js';
 import {TaskList} from '../../components';
 
@@ -9,24 +9,23 @@ export const TaskPage = () => {
     const [tasksStore, setTasksStore] = useState({unimportant: [], important: [], urgent: []});
     const commonArr = tasksStore.unimportant.concat(tasksStore.important, tasksStore.urgent);
     const [duplicateCreation, setDuplicateCreation] = useState({unimportant: false}, {important: false}, {urgent: false})
-
+    const [duplicateEdit, setDuplicateEdit] = useState({unimportant: false}, {important: false}, {urgent: false})
 
     const addTask = (type, name) => {
         
         const tasksStoreCopy = {...tasksStore};
              
-        if (!findDuplicateTask(name)) {
+        if (findDuplicateTask(name)) {
 
             tasksStoreCopy[type].push({name: name.trim(), checked: false});
             setTasksStore(tasksStoreCopy);
             return true
 
         } else {
-        
-            const duplicateCreationCopy = {...duplicateCreation};
-            duplicateCreationCopy[type] = true;
-            setDuplicateCreation(duplicateCreationCopy);
+
+            highlightDublicateCreation(type);
             return false;
+
         }
         
     }  
@@ -35,9 +34,33 @@ export const TaskPage = () => {
     const findDuplicateTask = (name) => {
           
         if (commonArr.findIndex(item => item.name === name.trim()) === -1) {
+            return true
+
+        } else return false
+
+    }
+
+
+    const findDuplicateEditTask = (tasksStoreCopy, taskEdit) => {
+       
+        if (tasksStoreCopy.unimportant.concat(tasksStoreCopy.important, tasksStoreCopy.urgent).filter(item => item.name === taskEdit.name.trim()).length > 1) {
+           
+            console.log('error')
             return false
 
-        } else return true
+        } else {
+            
+            console.log('rule')
+            return true;  
+        }  
+    }
+
+
+    const highlightDublicateCreation = (type) => {
+
+        const duplicateCreationCopy = {...duplicateCreation};
+        duplicateCreationCopy[type] = true;
+        setDuplicateCreation(duplicateCreationCopy);
 
     }
 
@@ -49,6 +72,26 @@ export const TaskPage = () => {
         setDuplicateCreation(duplicateCreationCopy);
 
     }
+    
+    
+    
+    const highlightDublicateEdit = (type) => {
+
+        const duplicateEditCopy = {...duplicateEdit};
+        duplicateEditCopy[type] = true;
+        setDuplicateEdit(duplicateEditCopy);
+
+    }
+
+
+    const resetDuplicateEdit = (type) => {
+
+        const duplicateEditCopy = {...duplicateEdit};
+        duplicateEditCopy[type] = false;
+        setDuplicateEdit(duplicateEditCopy);
+
+    }
+    
 
 
     const checkTask = (i, priority) => {
@@ -62,49 +105,57 @@ export const TaskPage = () => {
 
     const deleteTask = (i, priority) => {
 
-            const tasksStoreCopy = {...tasksStore};
-            tasksStoreCopy[priority].splice(i, 1);
-            setTasksStore(tasksStoreCopy);
+        const tasksStoreCopy = {...tasksStore};
+        tasksStoreCopy[priority].splice(i, 1);
+        setTasksStore(tasksStoreCopy);
         
     }
 
 
 
-    const editTask = (task, number, priority, taskEditName) => {
-
+    const editTask = (task, i, priority, taskEdit) => {
+        console.log('start edit')
+       
         if(!task.checked) {
             const tasksStoreCopy = {...tasksStore};
            
-            if(task.name === taskEditName) return;
+            if(task.name === taskEdit) return true;
 
             else {
-                console.log(taskEditName)
-               
-                tasksStoreCopy[priority].splice(number, number + 1, {name: taskEditName, checked: false});   
+
+                tasksStoreCopy[priority].splice(i, 1, taskEdit);
                 setTasksStore(tasksStoreCopy);
-                console.log(tasksStoreCopy);
-          
-            
-                if(!findDuplicateTask(taskEditName)){
-                    return false;
-                } else return true;
-            
-            }           
-        } else return   
+                         
+                if (findDuplicateEditTask(tasksStoreCopy,taskEdit)) {
+                     
+                    return true;
+                   
+                } else {
+                    console.log('dublicat');
+
+                    highlightDublicateEdit(priority);
+                    return false;  
+                }
+                
+            }      
+
+        } else return true
 
     }
 
  
  
     const hideShowTasks = (event) => {
+
         const tasksStoreCopy = {...tasksStore};
         console.log(event, tasksStoreCopy);
+
     }
 
     
 
     return(
-        <Context.Provider value = {{deleteTask, editTask, checkTask, findDuplicateTask, duplicateCreation, resetDuplicateCreation}}>
+        <Context.Provider value = {{deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit}}>
             <div className="page">
                 <h1> Your ToDo List</h1>
 
@@ -120,6 +171,7 @@ export const TaskPage = () => {
                                   findDuplicateTask = {findDuplicateTask}
                                   createDuplicate = {duplicateCreation.unimportant}
                                   resetDuplicate = {resetDuplicateCreation}
+                                  createDuplicateEdit = {duplicateEdit.unimportant}
                         />
                     </div> 
                 
@@ -133,7 +185,7 @@ export const TaskPage = () => {
                                   findDuplicateTask = {findDuplicateTask}
                                   createDuplicate = {duplicateCreation.important}
                                   resetDuplicate = {resetDuplicateCreation}
-
+                                  createDuplicateEdit = {duplicateEdit.important}
                         />
                     </div>
 
@@ -147,7 +199,7 @@ export const TaskPage = () => {
                                   findDuplicateTask = {findDuplicateTask}
                                   createDuplicate = {duplicateCreation.urgent}
                                   resetDuplicate = {resetDuplicateCreation}
-
+                                  createDuplicateEdit = {duplicateEdit.urgent}
                         />
                     </div>
                 
