@@ -1,10 +1,8 @@
-import './tasksPage.scss';
-
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Context} from '../../context.js';
 import {TaskList} from '../../components';
 
-
+import './tasksPage.scss';
 
 export const TaskPage = () => {
 
@@ -29,7 +27,6 @@ export const TaskPage = () => {
             duplicateCreationCopy[type] = true;
             setDuplicateCreation(duplicateCreationCopy);
             return false;
-
         }
         
     }  
@@ -39,6 +36,7 @@ export const TaskPage = () => {
           
         if (commonArr.findIndex(item => item.name === name.trim()) === -1) {
             return false
+
         } else return true
 
     }
@@ -62,38 +60,41 @@ export const TaskPage = () => {
     }
 
 
-    const deleteTask = (task, i, priority) => {
+    const deleteTask = (i, priority) => {
 
-        if(task.checked){   
             const tasksStoreCopy = {...tasksStore};
             tasksStoreCopy[priority].splice(i, 1);
             setTasksStore(tasksStoreCopy);
-        }
-
+        
     }
 
 
 
-    const editTask = (task, i, priority, input, taskEditName) => {
+    const editTask = (task, number, priority, taskEditName) => {
 
-         if (!task.checked) { 
+        if(!task.checked) {
             const tasksStoreCopy = {...tasksStore};
-            input.current.focus();
-            
-                   
-            console.log(task.name, taskEditName)
-          
-            // const editedTask = tasksStoreCopy[priority].splice(i, 1);
-            // console.log(editedTask)
-            // tasksStoreCopy[priority].slice(i, {name: name.trim(), checked: false});
-            // findDuplicateTask(task.name)
-            setTasksStore(tasksStoreCopy);
-            console.log(tasksStoreCopy);
+           
+            if(task.name === taskEditName) return;
 
-        } else return 
+            else {
+                console.log(taskEditName)
+               
+                tasksStoreCopy[priority].splice(number, number + 1, {name: taskEditName, checked: false});   
+                setTasksStore(tasksStoreCopy);
+                console.log(tasksStoreCopy);
+          
+            
+                if(!findDuplicateTask(taskEditName)){
+                    return false;
+                } else return true;
+            
+            }           
+        } else return   
 
     }
 
+ 
  
     const hideShowTasks = (event) => {
         const tasksStoreCopy = {...tasksStore};
@@ -103,7 +104,7 @@ export const TaskPage = () => {
     
 
     return(
-        <Context.Provider value = {{deleteTask, editTask, checkTask}}>
+        <Context.Provider value = {{deleteTask, editTask, checkTask, findDuplicateTask, duplicateCreation, resetDuplicateCreation}}>
             <div className="page">
                 <h1> Your ToDo List</h1>
 

@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import {TaskItem} from '../taskItem/taskItem.js';
 import {useState, useRef} from 'react';
+
 import './taskList.scss';
 
 export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplicate}) => {
@@ -10,18 +11,16 @@ export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplic
     
 
     const printTask = (event) => {
-        console.log(event.target.value, taskName)
+
         setTaskName(event.target.value); 
-        
+               
         if (createDuplicate) {
-            console.log('clear dublicate')
-            resetDuplicate(taskType);
+          resetDuplicate(taskType);
         }
 
     }
 
     
-
 
     const saveTask = (event) => {   
 
