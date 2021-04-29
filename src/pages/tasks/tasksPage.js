@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import {Context} from '../../context.js';
-import {TaskList} from '../../components';
+import TaskList from '../../components/taskList/taskList.js';
 
 import './tasksPage.scss';
 
@@ -149,11 +149,8 @@ export const TaskPage = () => {
                         <div className="page-main-col-unimportant" onClick ={hideShowTasks}>
                             Unimportant tasks:
                         </div>    
-                        <TaskList tasks = { tasksStore.unimportant }
-                                  taskType = 'unimportant'
-                                  addTask = {addTask}
+                        <TaskList taskType = 'unimportant'
                                   findDuplicateTask = {findDuplicateTask}
-                                  createDuplicate = {duplicateCreation.unimportant}
                                   resetDuplicate = {resetDuplicateCreation}
                                   createDuplicateEdit = {duplicateEdit.unimportant}
                         />
@@ -163,11 +160,8 @@ export const TaskPage = () => {
                         <div className="page-main-col-important" onClick ={hideShowTasks}>
                             Important tasks:
                         </div>
-                        <TaskList tasks = { tasksStore.important }
-                                  taskType = 'important'
-                                  addTask = {addTask}    
+                        <TaskList taskType = 'important'
                                   findDuplicateTask = {findDuplicateTask}
-                                  createDuplicate = {duplicateCreation.important}
                                   resetDuplicate = {resetDuplicateCreation}
                                   createDuplicateEdit = {duplicateEdit.important}
                         />
@@ -177,11 +171,8 @@ export const TaskPage = () => {
                         <div className="page-main-col-urgent" onClick ={hideShowTasks}>
                             Very important tasks:
                         </div>
-                        <TaskList tasks = { tasksStore.urgent }
-                                  taskType = 'urgent'
-                                  addTask = {addTask}   
+                        <TaskList taskType = 'urgent'
                                   findDuplicateTask = {findDuplicateTask}
-                                  createDuplicate = {duplicateCreation.urgent}
                                   resetDuplicate = {resetDuplicateCreation}
                                   createDuplicateEdit = {duplicateEdit.urgent}
                         />

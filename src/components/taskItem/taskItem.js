@@ -11,14 +11,14 @@ export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
   
   const { deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit, findDuplicateEditTask, commonArr } = useContext(Context);
   const [taskEdit, setTaskEdit] = useState({name: '', checked: false});
-  const [isEdit, setIsEdit] = useState(false);
+  //const [isEdit, setIsEdit] = useState(false);
 
 
   const input = useRef(null);
 
   const handleInput = (event) => {
-    setIsEdit(true);
-    console.log(isEdit)
+    // setIsEdit(true);
+    // console.log(isEdit)
 
     const taskEditCopy = { ...taskEdit}
     taskEditCopy.name = event.target.value.trim();
@@ -38,8 +38,8 @@ export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
     if(event.keyCode === 13){
 
       if (findDuplicateEditTask(taskEdit, commonArr)){
-        setIsEdit(false);
-        console.log(isEdit)
+        // setIsEdit(false);
+        // console.log(isEdit)
         input.current.blur() 
         setTaskEdit({name: '', checked: false})
         
