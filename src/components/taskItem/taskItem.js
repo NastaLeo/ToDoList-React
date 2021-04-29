@@ -9,21 +9,23 @@ import './taskItem.scss';
 
 export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
   
-  const { deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit } = useContext(Context);
+  const { deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit, findDuplicateEditTask, commonArr } = useContext(Context);
   const [taskEdit, setTaskEdit] = useState({name: '', checked: false});
+  const [isEdit, setIsEdit] = useState(false);
 
 
   const input = useRef(null);
 
-
   const handleInput = (event) => {
+    setIsEdit(true);
+    console.log(isEdit)
 
     const taskEditCopy = { ...taskEdit}
     taskEditCopy.name = event.target.value.trim();
     setTaskEdit(taskEditCopy);
 
     editTask(task, number, priority, taskEditCopy);
-
+    
     if (createDuplicateEdit) {
       resetDuplicateEdit(priority);
     }
@@ -35,14 +37,15 @@ export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
 
     if(event.keyCode === 13){
 
-      if(editTask(task, number, priority, taskEdit.name)){
-
+      if (findDuplicateEditTask(taskEdit, commonArr)){
+        setIsEdit(false);
+        console.log(isEdit)
         input.current.blur() 
-        setTaskEdit('')
+        setTaskEdit({name: '', checked: false})
         
-      } 
+      } else {
 
-      // else highlightDublicateEdit(priority);
+        highlightDublicateEdit(priority);}
 
     } 
 
@@ -88,4 +91,5 @@ TaskItem.propTypes = {
   task: PropTypes.object,
   number: PropTypes.number,
   priority: PropTypes.string,
+  createDuplicateEdit: PropTypes.bool
 }

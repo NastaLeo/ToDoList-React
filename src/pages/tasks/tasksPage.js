@@ -41,16 +41,14 @@ export const TaskPage = () => {
     }
 
 
-    const findDuplicateEditTask = (tasksStoreCopy, taskEdit) => {
+    const findDuplicateEditTask = (taskEdit, commonArr) => { 
        
-        if (tasksStoreCopy.unimportant.concat(tasksStoreCopy.important, tasksStoreCopy.urgent).filter(item => item.name === taskEdit.name.trim()).length > 1) {
-           
-            console.log('error')
+        if (commonArr.filter(item => item.name === taskEdit.name.trim()).length > 1) {
+          
             return false
 
-        } else {
+       } else {
             
-            console.log('rule')
             return true;  
         }  
     }
@@ -114,32 +112,18 @@ export const TaskPage = () => {
 
 
     const editTask = (task, i, priority, taskEdit) => {
-        console.log('start edit')
        
         if(!task.checked) {
             const tasksStoreCopy = {...tasksStore};
            
-            if(task.name === taskEdit) return true;
+            if(task.name === taskEdit.name) return true;
 
-            else {
-
+            else {                        
                 tasksStoreCopy[priority].splice(i, 1, taskEdit);
-                setTasksStore(tasksStoreCopy);
-                         
-                if (findDuplicateEditTask(tasksStoreCopy,taskEdit)) {
-                     
-                    return true;
-                   
-                } else {
-                    console.log('dublicat');
-
-                    highlightDublicateEdit(priority);
-                    return false;  
-                }
-                
+                setTasksStore(tasksStoreCopy); 
             }      
 
-        } else return true
+        } else return 
 
     }
 
@@ -155,7 +139,7 @@ export const TaskPage = () => {
     
 
     return(
-        <Context.Provider value = {{deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit}}>
+        <Context.Provider value = {{deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit, findDuplicateEditTask, commonArr}}>
             <div className="page">
                 <h1> Your ToDo List</h1>
 
