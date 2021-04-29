@@ -1,1 +1,1 @@
-// export {TaskList as TaskList} from './taskList/taskList.js'
+export {TaskList} from './taskList/taskList.js'

@@ -1,12 +1,10 @@
 import PropTypes from 'prop-types';
-import {useState, useRef} from 'react';
-import {connect} from 'react-redux';
-
-import {createTask, checkDuplicate} from '../../redux/actions/taskActions.js';
 import {TaskItem} from '../taskItem/taskItem.js';
+import {useState, useRef} from 'react';
+
 import './taskList.scss';
 
-const TaskList = ({tasks, taskType, resetDuplicate, createDuplicateEdit, createTask, checkDuplicate}) => {
+export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplicate, createDuplicateEdit}) => {
 
     const [taskName, setTaskName] = useState('');
     const input = useRef(null);
@@ -16,9 +14,9 @@ const TaskList = ({tasks, taskType, resetDuplicate, createDuplicateEdit, createT
 
         setTaskName(event.target.value); 
                
-        // if(createDuplicate) {
-        //   resetDuplicate(taskType);
-        // }
+        if(createDuplicate) {
+          resetDuplicate(taskType);
+        }
 
     }
 
@@ -28,24 +26,19 @@ const TaskList = ({tasks, taskType, resetDuplicate, createDuplicateEdit, createT
 
         if(event.keyCode === 13){
            
-           checkDuplicate({taskType, taskName});
-        
-            console.log('tasks', tasks)
-                createTask({taskType, taskName})
+            if (addTask(taskType, taskName)) {
                 input.current.blur() 
                 setTaskName(''); 
-
-           
+            } 
+            
         } 
     }
-
-    console.log('redux', tasks)
 
       
     return(
                 
         <div className="task-list">
-            {tasks[taskType].length > 0 && tasks[taskType].map((task, index) => {
+            {tasks.length > 0 && tasks.map((task, index) => {
                 return (
                     <TaskItem key={index} 
                               task={task} 
@@ -53,7 +46,7 @@ const TaskList = ({tasks, taskType, resetDuplicate, createDuplicateEdit, createT
                               priority={taskType} 
                               checked={task.checked}
                               createDuplicateEdit = {createDuplicateEdit}
-                    />
+                />
                 )}
             )}
 
@@ -68,11 +61,7 @@ const TaskList = ({tasks, taskType, resetDuplicate, createDuplicateEdit, createT
                    onChange = {printTask}
                    onKeyDown = {saveTask}
             />
-
-           {(((taskType === 'unimportant' && tasks.unimportantDuplicate) || 
-              (taskType === 'important' && tasks.importantDuplicate) || 
-              (taskType === 'urgent' && tasks.urgentDuplicate)) || 
-              createDuplicateEdit) &&
+           {(createDuplicate || createDuplicateEdit) &&
             <span className="task-list-error">You have yet the same task</span>}
 
         </div>
@@ -83,19 +72,10 @@ const TaskList = ({tasks, taskType, resetDuplicate, createDuplicateEdit, createT
 
 
 TaskList.propTypes = {
-    tasks: PropTypes.object,
+    tasks: PropTypes.array,
     taskType: PropTypes.string, 
+    addTask: PropTypes.func,
+    createDuplicate: PropTypes.bool,
     resetDuplicate: PropTypes.func,
     createDuplicateEdit: PropTypes.bool
 }
-
-
-const mapStateToProps = (state) => {
-    return {tasks: state.taskReducer}
-}
-
-
-export default connect(
-    mapStateToProps, 
-    {createTask, checkDuplicate}
-)(TaskList)
