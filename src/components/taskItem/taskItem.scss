@@ -1,45 +1,74 @@
-
-.item {
-    position: relative;
-    margin-bottom: 10px;
-    width: 350px;
-    height: 35px;
-    border: 2px solid black;
-    border-radius: 10px;
-    outline: none;
-    font-size: 20px;
+section {
     display: flex;
-    align-items: center;
-    justify-content: flex-start;
+    flex-direction: column;
 
-    input[type=checkbox] {
-        margin: 0px 5px 0px 10px;
-        max-width: 20px;
-        height: auto;
-    }
-
-    input {
-        border: none;
+    .red, .orange, .green {
+        position: relative;
+        margin-bottom: 10px;
+        width: 350px;
+        height: 35px;
+        border-radius: 10px;
         outline: none;
         font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        
+        input[type=checkbox] {
+            margin: 0px 5px 0px 10px;
+            max-width: 20px;
+            height: auto;
+        }
+
+        input {
+            border: none;
+            outline: none;
+            font-size: 20px;
+        }
+
+        .item {
+            position: absolute;
+            right: 10px;
+            
+            &-edit {
+                width: 10px;
+                height: auto;
+                cursor: pointer;
+            } 
+
+            &-delete {
+                width: 15px;
+                height: auto;
+                cursor: pointer;              
+            }
+        }
+    
+    }   
+    
+    .item-error {
+        margin-bottom: 10px;
+        color:red;
+        font-size: 12px;
     }
 
-    &-icons {
-        position: absolute;
-        right: 10px;
-        
-        &-edit {
-            max-width: 15px;
-            height: auto;
-            cursor: pointer;
-        } 
+    .green {
+        border: 2px solid rgb(47, 153, 47);
+       
+    }
 
-        &-delete {
-            max-width: 15px;
-            height: auto;
-            cursor: pointer;              
-        }
+    .orange {
+        border: 2px solid rgb(255, 145, 0);
+        
+    }
+
+    .red {
+        border: 2px solid rgb(230, 30, 30);
+       
     }
 
 }
+
+
+
 

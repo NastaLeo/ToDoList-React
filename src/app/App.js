@@ -1,10 +1,32 @@
+import { BrowserRouter as Router, Route} from "react-router-dom";
+
+import {LoginPage, RegistrationPage, UsersPage, TasksPage} from '../pages';
 import './App.scss';
-import {TaskPage} from '../pages';
 
 function App() {
   return (
     <div className="wrapper">
-      <TaskPage/>
+
+      <Router>
+
+        <Route exact path="/">
+          <LoginPage/>
+        </Route>
+
+        <Route path="/registration">
+          <RegistrationPage/>
+        </Route>
+
+        <Route path="/users">
+          <UsersPage/>
+        </Route>
+
+        <Route path="/tasks">
+          <TasksPage/>
+        </Route>
+         
+      </Router>
+
     </div>
   );
 }
