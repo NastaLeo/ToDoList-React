@@ -11,15 +11,12 @@ export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
   
   const { deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit, findDuplicateEditTask, commonArr } = useContext(Context);
   const [taskEdit, setTaskEdit] = useState({name: '', checked: false});
-  //const [isEdit, setIsEdit] = useState(false);
 
 
   const input = useRef(null);
 
   const handleInput = (event) => {
-    // setIsEdit(true);
-    // console.log(isEdit)
-
+    
     const taskEditCopy = { ...taskEdit}
     taskEditCopy.name = event.target.value.trim();
     setTaskEdit(taskEditCopy);
@@ -38,8 +35,7 @@ export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
     if(event.keyCode === 13){
 
       if (findDuplicateEditTask(taskEdit, commonArr)){
-        // setIsEdit(false);
-        // console.log(isEdit)
+        input.current.readOnly = true;
         input.current.blur() 
         setTaskEdit({name: '', checked: false})
         
@@ -65,13 +61,16 @@ export const TaskItem = ({ task, number, priority, createDuplicateEdit }) => {
       <input ref={input} 
              value={task.name} 
              onChange={handleInput} 
-             onKeyDown={saveEditTask}/>
+             onKeyDown={saveEditTask}
+             readOnly/>
 
       <div className='item-icons'>
 
-        {!task.checked && 
+        {(!task.checked && taskEdit.name === '') &&
         <img className='item-icons-edit' src={pencil} alt='edit'
-             onClick={() => input.current.focus()}/>
+             onClick={() => {
+                input.current.readOnly = false;
+                input.current.focus()}}/>
         }
 
         {task.checked && 

@@ -1,29 +1,72 @@
-import {useState} from 'react';
+import {useState, useReducer} from 'react';
 import {Context} from '../../context.js';
 import {TaskList} from '../../components';
 
 import './tasksPage.scss';
 
+const tasksState = {unimportant: [], important: [], urgent: []};
+const duplicateCreationState = { unimportant: false, important: false, urgent: false };
+
+const createTask = (state, action) => {
+
+    switch(action.type) {
+        case "CREATE_TASK_UNIMPORTANT":
+            return {...state, unimportant: state.unimportant.concat({name: action.payload.name, checked: false})};
+
+        case "CREATE_TASK_IMPORTANT":
+            return {...state, important: state.important.concat({name: action.payload.name, checked: false})};
+
+        case "CREATE_TASK_URGENT":
+            return {...state, urgent: state.urgent.concat({name: action.payload.name, checked: false})};
+        
+        default: 
+            return {...state};
+    }
+}
+
+const checkDuplicate = (state, action) => {
+    console.log(state, action)
+
+    switch(action.type) {
+
+        case "CHECK_DUPLICATE_UNIMPORTANT":
+            return {...state, unimportant: action.payload};
+
+        case "CHECK_DUPLICATE_IMPORTANT":
+            return {...state, important: action.payload};
+
+        case "CHECK_DUPLICATE_URGENT":
+            return {...state, urgent: action.payload};
+        
+        default: 
+            return {...state};
+
+    }
+
+}
+
+
+
 export const TaskPage = () => {
 
-    const [tasksStore, setTasksStore] = useState({unimportant: [], important: [], urgent: []});
+    const [tasksStore, dispatchCreate] = useReducer(createTask, tasksState);
+    const [duplicateCreation, dispatchDuplicateCreation] = useReducer(checkDuplicate, duplicateCreationState);
+
     const commonArr = tasksStore.unimportant.concat(tasksStore.important, tasksStore.urgent);
-    const [duplicateCreation, setDuplicateCreation] = useState({unimportant: false}, {important: false}, {urgent: false})
     const [duplicateEdit, setDuplicateEdit] = useState({unimportant: false}, {important: false}, {urgent: false})
 
     const addTask = (type, name) => {
-        
-        const tasksStoreCopy = {...tasksStore};
-             
+                      
         if (findDuplicateTask(name)) {
 
-            tasksStoreCopy[type].push({name: name.trim(), checked: false});
-            setTasksStore(tasksStoreCopy);
+            dispatchCreate({type: `CREATE_TASK_${type.toUpperCase()}`, payload: {name, type}})
+
             return true
 
         } else {
 
-            highlightDublicateCreation(type);
+            dispatchDuplicateCreation({type: `CHECK_DUPLICATE_${type.toUpperCase()}`, payload: true})
+
             return false;
 
         }
@@ -32,8 +75,11 @@ export const TaskPage = () => {
 
 
     const findDuplicateTask = (name) => {
+        
+        const {unimportant, important, urgent} = tasksStore
           
-        if (commonArr.findIndex(item => item.name === name.trim()) === -1) {
+        if (unimportant.concat(important, urgent).findIndex(item => item.name === name.trim()) === -1) {
+         
             return true
 
         } else return false
@@ -41,52 +87,46 @@ export const TaskPage = () => {
     }
 
 
-    const findDuplicateEditTask = (taskEdit, commonArr) => { 
-       
-        if (commonArr.filter(item => item.name === taskEdit.name.trim()).length > 1) {
-          
-            return false
-
-       } else {
-            
-            return true;  
-        }  
-    }
-
-
-    const highlightDublicateCreation = (type) => {
-
-        const duplicateCreationCopy = {...duplicateCreation};
-        duplicateCreationCopy[type] = true;
-        setDuplicateCreation(duplicateCreationCopy);
-
-    }
-
 
     const resetDuplicateCreation = (type) => {
 
-        const duplicateCreationCopy = {...duplicateCreation};
-        duplicateCreationCopy[type] = false;
-        setDuplicateCreation(duplicateCreationCopy);
+        dispatchDuplicateCreation({type: `CHECK_DUPLICATE_${type.toUpperCase()}`, payload: false})
 
     }
+
+
+
+    const findDuplicateEditTask = (taskEdit, commonArr) => { 
+       
+    //     if (commonArr.filter(item => item.name === taskEdit.name.trim()).length > 1) {
+          
+    //         return false
+
+    //    } else {
+            
+    //         return true;  
+    //     }  
+    }
+
+
+  
     
     
     
     const highlightDublicateEdit = (type) => {
 
-        const duplicateEditCopy = {...duplicateEdit};
-        duplicateEditCopy[type] = true;
-        setDuplicateEdit(duplicateEditCopy);
+        // const duplicateEditCopy = {...duplicateEdit};
+        // duplicateEditCopy[type] = true;
+        // setDuplicateEdit(duplicateEditCopy);
 
     }
 
 
     const resetDuplicateEdit = (type) => {
 
-        const duplicateEditCopy = {...duplicateEdit};
-        duplicateEditCopy[type] = false;
-        setDuplicateEdit(duplicateEditCopy);
+        // const duplicateEditCopy = {...duplicateEdit};
+        // duplicateEditCopy[type] = false;
+        // setDuplicateEdit(duplicateEditCopy);
 
     }
     
@@ -94,18 +134,18 @@ export const TaskPage = () => {
 
     const checkTask = (i, priority) => {
 
-        const tasksStoreCopy = {...tasksStore};
-        tasksStoreCopy[priority][i].checked = !tasksStore[priority][i].checked;
-        setTasksStore(tasksStoreCopy);
+        // const tasksStoreCopy = {...tasksStore};
+        // tasksStoreCopy[priority][i].checked = !tasksStore[priority][i].checked;
+        // setTasksStore(tasksStoreCopy);
 
     }
 
 
     const deleteTask = (i, priority) => {
 
-        const tasksStoreCopy = {...tasksStore};
-        tasksStoreCopy[priority].splice(i, 1);
-        setTasksStore(tasksStoreCopy);
+        // const tasksStoreCopy = {...tasksStore};
+        // tasksStoreCopy[priority].splice(i, 1);
+        // setTasksStore(tasksStoreCopy);
         
     }
 
@@ -113,30 +153,23 @@ export const TaskPage = () => {
 
     const editTask = (task, i, priority, taskEdit) => {
        
-        if(!task.checked) {
-            const tasksStoreCopy = {...tasksStore};
+        // if(!task.checked) {
+        //     const tasksStoreCopy = {...tasksStore};
            
-            if(task.name === taskEdit.name) return true;
+        //     if(task.name === taskEdit.name) return true;
 
-            else {                        
-                tasksStoreCopy[priority].splice(i, 1, taskEdit);
-                setTasksStore(tasksStoreCopy); 
-            }      
+        //     else {                        
+        //         tasksStoreCopy[priority].splice(i, 1, taskEdit);
+        //         setTasksStore(tasksStoreCopy); 
+        //     }      
 
-        } else return 
+        // } else return 
 
     }
 
  
  
-    const hideShowTasks = (event) => {
-
-        const tasksStoreCopy = {...tasksStore};
-        console.log(event, tasksStoreCopy);
-
-    }
-
-    
+      
 
     return(
         <Context.Provider value = {{deleteTask, editTask, checkTask, resetDuplicateEdit, highlightDublicateEdit, findDuplicateEditTask, commonArr}}>
@@ -146,7 +179,7 @@ export const TaskPage = () => {
                 <div className='page-main'>
 
                     <div className="page-main-col">
-                        <div className="page-main-col-unimportant" onClick ={hideShowTasks}>
+                        <div className="page-main-col-unimportant" >
                             Unimportant tasks:
                         </div>    
                         <TaskList tasks = { tasksStore.unimportant }
@@ -160,7 +193,7 @@ export const TaskPage = () => {
                     </div> 
                 
                     <div className="page-main-col">
-                        <div className="page-main-col-important" onClick ={hideShowTasks}>
+                        <div className="page-main-col-important" >
                             Important tasks:
                         </div>
                         <TaskList tasks = { tasksStore.important }
@@ -174,7 +207,7 @@ export const TaskPage = () => {
                     </div>
 
                     <div className="page-main-col">
-                        <div className="page-main-col-urgent" onClick ={hideShowTasks}>
+                        <div className="page-main-col-urgent" >
                             Very important tasks:
                         </div>
                         <TaskList tasks = { tasksStore.urgent }

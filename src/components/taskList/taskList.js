@@ -25,7 +25,7 @@ export const TaskList = ({tasks, taskType, addTask, createDuplicate, resetDuplic
     const saveTask = (event) => {   
 
         if(event.keyCode === 13){
-           
+         
             if (addTask(taskType, taskName)) {
                 input.current.blur() 
                 setTaskName(''); 
