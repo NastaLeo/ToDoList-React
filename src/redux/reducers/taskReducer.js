@@ -13,10 +13,7 @@ const taskReducer = (state = initialState, action) => {
             const stateCopyCreate = addNewTask({...state}, action.payload.taskName, action.payload.taskType);
             return stateCopyCreate;
 
-        // case 'CHECK_DUPLICATE': 
-        //     const stateCopyDuplicate = checkDuplicate ({...state}, action.payload.taskName, action.payload.taskType)
-        //     return stateCopyDuplicate; 
-
+        
         case 'CHECK_TASK':    
             const stateCopyCheck = checkTaskCompletion ({...state}, action.payload.priority, action.payload.number)
             return stateCopyCheck; 
@@ -43,21 +40,6 @@ const addNewTask = (state, name, type) => {
     return state;
 
 }
-
-
-// const checkDuplicate = (state, name, type) => {
-    
-//     const { unimportant, important, urgent} = state;
-//     const index = unimportant.concat(important, urgent).findIndex(el => el.name === name.trim());
-//     console.log('index', index)
-//     if (index !== -1) {
-//         type === "unimportant" ? state.unimportantDuplicate = true : 
-//         type === "important" ? state.importantDuplicate = true : 
-//         state.urgent = true;
-//     }
-
-//     return state
-// }
 
 
 const checkTaskCompletion = (state,type, number) => {

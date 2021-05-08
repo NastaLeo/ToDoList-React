@@ -5,8 +5,7 @@ import './tasksPage.scss';
 
 export const TasksPage = () => {
 
-    //const commonArr = tasksStore.unimportant.concat(tasksStore.important, tasksStore.urgent);
-   
+      
     return(
             <div className="page">
                 <h1> Your ToDo List</h1>
@@ -35,14 +34,6 @@ export const TasksPage = () => {
                     </div>
                 
                 </div>
-
-                {/* <div className="page-statistics">
-
-                    {commonArr.length > 0 && 
-                    <div>Your statistics: you have {commonArr.filter(el => el.checked === false).length}  not completed tasks</div>
-                    }
-                
-                </div> */}
                 
             </div>
     )

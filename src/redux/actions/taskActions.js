@@ -7,16 +7,9 @@ export const createTask = (data) => {
 }
 
 
-// export const checkDuplicate = (data) => {
-//       return {
-//         type: 'CHECK_DUPLICATE', 
-//         payload: data
-//     }
-// }
-
 
 export const checkTaskCompletion = (data) => {
-       return {
+    return {
         type: 'CHECK_TASK', 
         payload: data
     }
