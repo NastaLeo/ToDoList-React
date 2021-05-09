@@ -4,82 +4,94 @@ import {TaskList} from '../../components';
 
 import './tasksPage.scss';
 
-const tasksState = {unimportant: [], important: [], urgent: []};
-const duplicateCreationState = { unimportant: false, important: false, urgent: false };
+const state = {
 
-const createTask = (state, action) => {
+                tasksState: {
+                    unimportant: [], 
+                    important: [], 
+                    urgent: []
+                },
+
+                duplicateCreationState: { 
+                    unimportant: false,
+                    important: false, 
+                    urgent: false 
+                }
+
+};
+
+
+
+const taskReducer = (state, action) => {
 
     switch(action.type) {
+
         case "CREATE_TASK_UNIMPORTANT":
-            return {...state, unimportant: state.unimportant.concat({name: action.payload.name, checked: false})};
+            const newUnimportantList = state.tasksState.unimportant.concat({name: action.payload.name, checked: false})
+            return {...state, tasksState: {...state.tasksState, unimportant: newUnimportantList}};
 
         case "CREATE_TASK_IMPORTANT":
-            return {...state, important: state.important.concat({name: action.payload.name, checked: false})};
-
-        case "CREATE_TASK_URGENT":
-            return {...state, urgent: state.urgent.concat({name: action.payload.name, checked: false})};
+            console.log('12', action)
+            const newImportantList = state.tasksState.important.concat({name: action.payload.name, checked: false})
+            return {...state, tasksState: {...state.tasksState, important: newImportantList}};
         
-        default: 
-            return {...state};
-    }
-}
-
-const checkDuplicate = (state, action) => {
-    console.log(state, action)
-
-    switch(action.type) {
+        case "CREATE_TASK_URGENT":
+            const newUrgentList = state.tasksState.urgent.concat({name: action.payload.name, checked: false})
+            return {...state, tasksState: {...state.tasksState, urgent: newUrgentList}};
 
         case "CHECK_DUPLICATE_UNIMPORTANT":
-            return {...state, unimportant: action.payload};
+            return {...state, duplicateCreationState: {...state.duplicateCreationState, unimportant: action.payload}};
 
         case "CHECK_DUPLICATE_IMPORTANT":
-            return {...state, important: action.payload};
+            return {...state, duplicateCreationState: {...state.duplicateCreationState, important: action.payload}};
 
         case "CHECK_DUPLICATE_URGENT":
-            return {...state, urgent: action.payload};
-        
+            return {...state, duplicateCreationState: {...state.duplicateCreationState, urgent: action.payload}};  
+            
+        case "CHECK_URGENT":    
+        console.log('12', action)       
+           const checkedUrgentTask = state.tasksState.urgent[action.payload.i];
+           return {...state, tasksState: {...state.tasksState, urgent: {...state.tasksState.urgent, checkedUrgentTask: {checked: !checkedUrgentTask.checked}}}};  
+
+            
         default: 
-            return {...state};
-
+           return {...state};
     }
-
 }
 
+
+console.log()
 
 
 export const TaskPage = () => {
 
-    const [tasksStore, dispatchCreate] = useReducer(createTask, tasksState);
-    const [duplicateCreation, dispatchDuplicateCreation] = useReducer(checkDuplicate, duplicateCreationState);
+    const [tasksStore, dispatch] = useReducer(taskReducer, state);
 
-    const commonArr = tasksStore.unimportant.concat(tasksStore.important, tasksStore.urgent);
+    const commonArr = tasksStore.tasksState.unimportant.concat(tasksStore.tasksState.important, tasksStore.tasksState.urgent);
     const [duplicateEdit, setDuplicateEdit] = useState({unimportant: false}, {important: false}, {urgent: false})
 
     const addTask = (type, name) => {
                       
         if (findDuplicateTask(name)) {
 
-            dispatchCreate({type: `CREATE_TASK_${type.toUpperCase()}`, payload: {name, type}})
-
+            dispatch({type: `CREATE_TASK_${type.toUpperCase()}`, payload: {name, type}})
             return true
 
         } else {
 
-            dispatchDuplicateCreation({type: `CHECK_DUPLICATE_${type.toUpperCase()}`, payload: true})
-
+            dispatch({type: `CHECK_DUPLICATE_${type.toUpperCase()}`, payload: true})
             return false;
 
         }
         
     }  
-
+  
 
     const findDuplicateTask = (name) => {
         
-        const {unimportant, important, urgent} = tasksStore
+        const {unimportant, important, urgent} = tasksStore.tasksState
           
         if (unimportant.concat(important, urgent).findIndex(item => item.name === name.trim()) === -1) {
-         
             return true
 
         } else return false
@@ -90,7 +102,7 @@ export const TaskPage = () => {
 
     const resetDuplicateCreation = (type) => {
 
-        dispatchDuplicateCreation({type: `CHECK_DUPLICATE_${type.toUpperCase()}`, payload: false})
+        dispatch({type: `CHECK_DUPLICATE_${type.toUpperCase()}`, payload: false})
 
     }
 
@@ -98,12 +110,10 @@ export const TaskPage = () => {
 
     const findDuplicateEditTask = (taskEdit, commonArr) => { 
        
-    //     if (commonArr.filter(item => item.name === taskEdit.name.trim()).length > 1) {
-          
+    //     if (commonArr.filter(item => item.name === taskEdit.name.trim()).length > 1) {        
     //         return false
 
-    //    } else {
-            
+    //    } else {          
     //         return true;  
     //     }  
     }
@@ -133,11 +143,15 @@ export const TaskPage = () => {
 
 
     const checkTask = (i, priority) => {
-
+               
         // const tasksStoreCopy = {...tasksStore};
-        // tasksStoreCopy[priority][i].checked = !tasksStore[priority][i].checked;
-        // setTasksStore(tasksStoreCopy);
+        // tasksStoreCopy[i].checked = !tasksStoreCopy[i].checked;
+        //setTasksStore(tasksStoreCopy);
 
+        console.log('before', tasksStore.tasksState.urgent)
+        dispatch({priority: `CHECK_${priority.toUpperCase()}`, payload: i})
+        console.log('after', tasksStore.tasksState.urgent)
+        
     }
 
 
@@ -182,11 +196,11 @@ export const TaskPage = () => {
                         <div className="page-main-col-unimportant" >
                             Unimportant tasks:
                         </div>    
-                        <TaskList tasks = { tasksStore.unimportant }
+                        <TaskList tasks = { tasksStore.tasksState.unimportant }
                                   taskType = 'unimportant'
                                   addTask = {addTask}
                                   findDuplicateTask = {findDuplicateTask}
-                                  createDuplicate = {duplicateCreation.unimportant}
+                                  createDuplicate = {tasksStore.duplicateCreationState.unimportant}
                                   resetDuplicate = {resetDuplicateCreation}
                                   createDuplicateEdit = {duplicateEdit.unimportant}
                         />
@@ -196,11 +210,11 @@ export const TaskPage = () => {
                         <div className="page-main-col-important" >
                             Important tasks:
                         </div>
-                        <TaskList tasks = { tasksStore.important }
+                        <TaskList tasks = { tasksStore.tasksState.important }
                                   taskType = 'important'
                                   addTask = {addTask}    
                                   findDuplicateTask = {findDuplicateTask}
-                                  createDuplicate = {duplicateCreation.important}
+                                  createDuplicate = {tasksStore.duplicateCreationState.important}
                                   resetDuplicate = {resetDuplicateCreation}
                                   createDuplicateEdit = {duplicateEdit.important}
                         />
@@ -210,11 +224,11 @@ export const TaskPage = () => {
                         <div className="page-main-col-urgent" >
                             Very important tasks:
                         </div>
-                        <TaskList tasks = { tasksStore.urgent }
+                        <TaskList tasks = { tasksStore.tasksState.urgent }
                                   taskType = 'urgent'
                                   addTask = {addTask}   
                                   findDuplicateTask = {findDuplicateTask}
-                                  createDuplicate = {duplicateCreation.urgent}
+                                  createDuplicate = {tasksStore.duplicateCreationState.urgent}
                                   resetDuplicate = {resetDuplicateCreation}
                                   createDuplicateEdit = {duplicateEdit.urgent}
                         />
