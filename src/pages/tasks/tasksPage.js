@@ -1,9 +1,12 @@
-import TaskList from '../../components/taskList/taskList.js';
+
+import {TaskList} from '../../components/taskList/taskList.js';
 
 import './tasksPage.scss';
 
 
 export const TasksPage = () => {
+
+   
 
       
     return(

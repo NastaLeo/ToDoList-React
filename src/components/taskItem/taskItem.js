@@ -1,18 +1,21 @@
 import PropTypes from 'prop-types';
 import {useRef, useState} from 'react';
+import {useDispatch} from 'react-redux';
+
+import {checkTaskCompletion, deleteTask, editTask} from '../../redux/actions/taskActions.js';
 
 import pencil from './pencil.svg'
 import cross from './cross.svg';
 import './taskItem.scss';
 
 
-export const TaskItem = ({ task, number, priority, checkTaskCompletion, deleteTask, editTask, tasks}) => {
+export const TaskItem = ({ task, number, priority, tasks}) => {
   
   const [taskEdit, setTaskEdit] = useState({name: '', checked: false});
   const [duplicateEdit, setDuplicateEdit] = useState({duplicate: false});
 
   const input = useRef(null);
-
+  const dispatch = useDispatch();
 
   const handleInput = (event) => {
     
@@ -20,7 +23,7 @@ export const TaskItem = ({ task, number, priority, checkTaskCompletion, deleteTa
     taskEditCopy.name = event.target.value.trim();
     setTaskEdit(taskEditCopy);
    
-    editTask({task, number, priority, taskEditCopy});
+    dispatch(editTask({type: 'EDIT_TASK', payload: {task, number, priority, taskEditCopy}}));
     
     if (findDuplicateEditTask(tasks, taskEdit)) {
       resetDuplicateEdit();
@@ -91,7 +94,7 @@ export const TaskItem = ({ task, number, priority, checkTaskCompletion, deleteTa
         <div>
           <input type='checkbox' 
                  checked={task.checked} 
-                 onChange={() => checkTaskCompletion({priority, number})}/>
+                 onChange={() => dispatch(checkTaskCompletion({type: 'CHECK_TASK', payload: {priority, number}}))}/>
         </div>
         
         <input ref={input} 
@@ -110,7 +113,7 @@ export const TaskItem = ({ task, number, priority, checkTaskCompletion, deleteTa
 
           {task.checked && 
           <img className='item-icons-delete' src={cross} alt='delete'
-              onClick={() => deleteTask({priority, number})} />
+              onClick={() => dispatch(deleteTask({type: 'DELETE_TASK', payload: {priority, number}}))} />
           }
 
         </div>

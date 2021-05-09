@@ -1,19 +1,25 @@
+import {useSelector, useDispatch} from 'react-redux';
+
 import PropTypes from 'prop-types';
 import {useState, useRef} from 'react';
-import {connect} from 'react-redux';
 
-import {createTask, checkTaskCompletion, deleteTask, editTask} from '../../redux/actions/taskActions.js';
+
+import {createTask} from '../../redux/actions/taskActions.js';
 import {TaskItem} from '../taskItem/taskItem.js';
 import './taskList.scss';
 
 
 
-const TaskList = ({tasks, taskType, createTask, checkTaskCompletion, deleteTask, editTask}) => {
+export const TaskList = ({taskType}) => {
 
     const [taskName, setTaskName] = useState('');
     const [duplicateCreation, setDuplicateCreation] = useState({duplicate: false});
     const input = useRef(null);
     
+
+    const dispatch = useDispatch();
+    const tasks = useSelector(state => state.taskReducer);
+  
     
     const printTask = (event) => {
 
@@ -64,7 +70,7 @@ const TaskList = ({tasks, taskType, createTask, checkTaskCompletion, deleteTask,
            
             if (findDuplicateTask(tasks, taskName)) {
 
-                createTask({taskType, taskName})
+                dispatch(createTask({type: 'CREATE_TASK', payload: {taskType, taskName}}))
                 input.current.blur() 
                 setTaskName(''); 
 
@@ -92,9 +98,6 @@ const TaskList = ({tasks, taskType, createTask, checkTaskCompletion, deleteTask,
                               number={index} 
                               priority={taskType} 
                               checked={task.checked}                     
-                              checkTaskCompletion ={checkTaskCompletion}
-                              deleteTask = {deleteTask}
-                              editTask = {editTask}
                               tasks = {tasks}
                     />
                 )}
@@ -126,13 +129,3 @@ TaskList.propTypes = {
     taskType: PropTypes.string, 
 }
 
-
-const mapStateToProps = (state) => {
-    return {tasks: state.taskReducer}
-}
-
-
-export default connect(
-    mapStateToProps, 
-    {createTask, checkTaskCompletion, deleteTask, editTask}
-)(TaskList)

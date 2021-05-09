@@ -6,14 +6,14 @@ const initialState = {
 
 
 const taskReducer = (state = initialState, action) => {
-
+  
     switch(action.type) {
 
         case 'CREATE_TASK':
+            console.log(action.payload)
             const stateCopyCreate = addNewTask({...state}, action.payload.taskName, action.payload.taskType);
             return stateCopyCreate;
 
-        
         case 'CHECK_TASK':    
             const stateCopyCheck = checkTaskCompletion ({...state}, action.payload.priority, action.payload.number)
             return stateCopyCheck; 
