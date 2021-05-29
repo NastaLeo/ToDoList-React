@@ -1,6 +1,8 @@
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import {useRef, useState} from 'react';
 import {useDispatch} from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 import {checkTaskCompletion, deleteTask, editTask} from '../../redux/actions/taskActions.js';
 
@@ -9,13 +11,61 @@ import cross from './cross.svg';
 import './taskItem.scss';
 
 
-export const TaskItem = ({ task, number, priority, tasks}) => {
+export const TaskItem = ({ task, number, priority, tasks, userId}) => {
   
+  const history = useHistory()
+ 
   const [taskEdit, setTaskEdit] = useState({name: '', checked: false});
   const [duplicateEdit, setDuplicateEdit] = useState({duplicate: false});
 
   const input = useRef(null);
+  const section = useRef(null);
+  
   const dispatch = useDispatch();
+
+
+
+  const checkCompletedTasks = () => {
+    axios.put(`http://localhost:8080/tasks/${userId}`, {name: task.name, type: priority, checked: !task.checked, id: number, userId}, {
+      headers: { 'token': localStorage.getItem('token')}
+    })
+    .then(response => {
+      if(response.status === 204){
+        dispatch(checkTaskCompletion({type: 'CHECK_TASK', payload: {priority, number}}))
+         if(task.checked) {
+           section.current.className = 'check'
+          }
+      }
+    })
+    .catch(error => {
+      console.log(error)
+       if(error.response.status === 401){
+        history.push('/login')
+      }
+    })
+    
+
+  }
+
+
+  const deleteTask = () => {
+    axios.delete(`http://localhost:8080/tasks/${userId}/${task._id}`, {
+      headers: { 'token': localStorage.getItem('token') }
+    })
+    .then(response => {
+      if(response.status === 204) {
+        console.log(priority, number, response)
+        dispatch(deleteTask({type: 'DELETE_TASK', payload: {type: priority, name: task.name}}))
+      }
+    })
+    .catch(error => {
+      console.log(error)
+      if(error.response.status === 401) {
+        history.push('/login');
+      }
+    })
+    
+  }
 
   const handleInput = (event) => {
     
@@ -87,20 +137,22 @@ export const TaskItem = ({ task, number, priority, tasks}) => {
   
   return (
 
-    <section id={number} >
+    <section ref={section}>
 
-      <div className={priority === 'urgent' ? 'red' : priority === 'important' ? 'orange' : 'green'}>
+      <div id={number} className={priority === 'urgent' ? 'red' : priority === 'important' ? 'orange' : 'green'}>
 
         <div>
-          <input type='checkbox' 
+            <input className={taskEdit.name !== '' ? 'unvisible' : ''}
+                 type='checkbox' 
                  checked={task.checked} 
-                 onChange={() => dispatch(checkTaskCompletion({type: 'CHECK_TASK', payload: {priority, number}}))}/>
+                 onChange={checkCompletedTasks}/>
         </div>
         
         <input ref={input} 
               value={task.name} 
               onChange={handleInput} 
               onKeyDown={saveEditTask}
+              disabled={!JSON.parse(localStorage.getItem('isAdmin'))}
               readOnly/>
 
         <div className='item-icons'>
@@ -111,9 +163,9 @@ export const TaskItem = ({ task, number, priority, tasks}) => {
                               input.current.focus()}}/>
           }
 
-          {task.checked && 
+          {task.checked && JSON.parse(localStorage.getItem('isAdmin')) &&
           <img className='item-icons-delete' src={cross} alt='delete'
-              onClick={() => dispatch(deleteTask({type: 'DELETE_TASK', payload: {priority, number}}))} />
+              onClick={deleteTask} />
           }
 
         </div>
@@ -131,6 +183,6 @@ export const TaskItem = ({ task, number, priority, tasks}) => {
 
 TaskItem.propTypes = {
   task: PropTypes.object,
-  number: PropTypes.number,
   priority: PropTypes.string,
+  userId: PropTypes.string
 }

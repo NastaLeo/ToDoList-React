@@ -1,3 +1,4 @@
+export {HomePage} from './home/homePage';
 
 export {LoginPage} from './login/loginPage';
 

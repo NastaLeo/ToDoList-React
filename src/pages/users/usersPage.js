@@ -1,16 +1,27 @@
+import axios from 'axios';
+import {useEffect, useState} from 'react';
+import {useHistory} from 'react-router-dom';
+
 import './usersPage.scss'
 
 export const UsersPage = () => {
 
+    const history = useHistory();
 
-    const usersArr =[
-        {name:'Ivan', age: 20},
-        {name:'In', age: 2650},
-        {name:'Ian', age: 460},
-        {name:'In', age: 25460},
-    ]
+    const [users, setUsers] = useState([])
 
+    useEffect(() => {
+        axios.get('http://localhost:8080/users', {headers: { 'token': localStorage.getItem('token')}})
+            .then(response => {
+                setUsers(response.data)
+            })
+            .catch(error =>{
+                if(error.response.status === 401){
+                    history.push('/login')
+                }
+            })
 
+    }, [])
 
     return (
 
@@ -22,10 +33,11 @@ export const UsersPage = () => {
 
             <input placeholder="Search"/>
 
-            {usersArr.length > 0 && usersArr.map((user, index) => {
+            {users.length > 0 && users.map((user, index) => {
                 return(
                     <div className="user"
-                         key={index}>{user.name}</div>
+                         onClick={() => history.push(`/tasks/${user._id}`)}
+                         key={index}>Name : {user.name}, login : {user.login}</div>
                 )
             })}
 

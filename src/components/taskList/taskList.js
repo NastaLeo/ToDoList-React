@@ -1,6 +1,7 @@
-import {useSelector, useDispatch} from 'react-redux';
-
+import {useDispatch} from 'react-redux';
+import axios from 'axios';
 import PropTypes from 'prop-types';
+import {useHistory} from 'react-router-dom';
 import {useState, useRef} from 'react';
 
 
@@ -10,16 +11,16 @@ import './taskList.scss';
 
 
 
-export const TaskList = ({taskType}) => {
+export const TaskList = ({taskType, userId, tasks}) => {
+   
+    const history = useHistory()
 
     const [taskName, setTaskName] = useState('');
     const [duplicateCreation, setDuplicateCreation] = useState({duplicate: false});
     const input = useRef(null);
-    
-
-    const dispatch = useDispatch();
-    const tasks = useSelector(state => state.taskReducer);
   
+    const dispatch = useDispatch();
+
     
     const printTask = (event) => {
 
@@ -35,7 +36,7 @@ export const TaskList = ({taskType}) => {
     const findDuplicateTask = (tasks, name) => {
 
         const { unimportant, important, urgent} = tasks;
-          
+    
         if (unimportant.concat(important, urgent).findIndex(item => item.name === name.trim()) === -1) {  
             return true
 
@@ -66,13 +67,23 @@ export const TaskList = ({taskType}) => {
 
     const saveTask = (event) => {   
 
-        if(event.keyCode === 13){
+        if(event.keyCode === 13 && event.target.value.trim() !== ''){
            
             if (findDuplicateTask(tasks, taskName)) {
-
-                dispatch(createTask({type: 'CREATE_TASK', payload: {taskType, taskName}}))
-                input.current.blur() 
-                setTaskName(''); 
+                
+                axios.post(`http://localhost:8080/tasks/${userId}`, {name: taskName, type: taskType,  checked: false}, {headers: { 'token': localStorage.getItem('token')}} )
+                    .then(response => {
+                        if(response.status === 200) {
+                            dispatch(createTask({type: 'CREATE_TASK', payload: {_id: response.data._id, taskType, taskName}}))
+                            input.current.blur() 
+                            setTaskName(''); 
+                        }
+                    })
+                    .catch(error => {
+                        if(error.response.status === 401) {
+                            history.push('/login');
+                        }
+                    })
 
             } else {
 
@@ -90,15 +101,16 @@ export const TaskList = ({taskType}) => {
                 
         <div className="task-list">
 
-            {tasks[taskType].length > 0 && tasks[taskType].map((task, index) => {
+            { tasks && tasks[taskType].length > 0 && tasks[taskType].map((task, index) => {
 
                 return (
                     <TaskItem key={index} 
                               task={task} 
-                              number={index} 
+                              number={task._id} 
                               priority={taskType} 
                               checked={task.checked}                     
                               tasks = {tasks}
+                              userId={userId}
                     />
                 )}
             )}
@@ -127,5 +139,6 @@ export const TaskList = ({taskType}) => {
 
 TaskList.propTypes = {  
     taskType: PropTypes.string, 
+    userId: PropTypes.string
 }
 
