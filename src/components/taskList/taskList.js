@@ -23,9 +23,7 @@ export const TaskList = ({taskType, userId, tasks}) => {
 
     
     const printTask = (event) => {
-
         setTaskName(event.target.value); 
-               
         if(!highlightDublicateCreation()) {
           resetDuplicateCreation();
         }
@@ -34,33 +32,25 @@ export const TaskList = ({taskType, userId, tasks}) => {
 
 
     const findDuplicateTask = (tasks, name) => {
-
         const { unimportant, important, urgent} = tasks;
-    
         if (unimportant.concat(important, urgent).findIndex(item => item.name === name.trim()) === -1) {  
             return true
-
         } else return false
-
     }
 
     
 
     const highlightDublicateCreation = () => {
-
         const duplicateCreationCopy = {...duplicateCreation};
         duplicateCreationCopy.duplicate = true;
         setDuplicateCreation(duplicateCreationCopy);
-
     }
 
 
     const resetDuplicateCreation = () => {
-
         const duplicateCreationCopy = {...duplicateCreation};
         duplicateCreationCopy.duplicate = false
         setDuplicateCreation(duplicateCreationCopy);
-
     }
 
     
@@ -71,7 +61,10 @@ export const TaskList = ({taskType, userId, tasks}) => {
            
             if (findDuplicateTask(tasks, taskName)) {
                 
-                axios.post(`http://localhost:8080/tasks/${userId}`, {name: taskName, type: taskType,  checked: false}, {headers: { 'token': localStorage.getItem('token')}} )
+                axios.post(`http://localhost:8080/tasks/${userId}`, 
+                            {name: taskName, type: taskType,  checked: false}, 
+                            {headers: { 'token': localStorage.getItem('token')}} 
+                )
                     .then(response => {
                         if(response.status === 200) {
                             dispatch(createTask({type: 'CREATE_TASK', payload: {_id: response.data._id, taskType, taskName}}))
@@ -86,11 +79,8 @@ export const TaskList = ({taskType, userId, tasks}) => {
                     })
 
             } else {
-
                 highlightDublicateCreation();
-
-            }
-           
+            }    
         } 
     }
 
@@ -138,7 +128,7 @@ export const TaskList = ({taskType, userId, tasks}) => {
 
 
 TaskList.propTypes = {  
-    taskType: PropTypes.string, 
-    userId: PropTypes.string
+        taskType: PropTypes.string, 
+        userId: PropTypes.string
 }
 

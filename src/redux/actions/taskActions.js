@@ -20,7 +20,6 @@ export const checkTaskCompletion = (data) => {
 }
 
 export const deleteTask = (data) => {
-    console.log(data)
     return {
         type: 'DELETE_TASK', 
         payload: data.payload

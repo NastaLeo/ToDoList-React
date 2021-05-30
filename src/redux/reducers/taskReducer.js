@@ -22,13 +22,11 @@ const taskReducer = (state = initialState, action) => {
             return stateCopyCheck; 
 
         case 'DELETE_TASK':
-            console.log('del', action.payload)
             const stateCopyDelete = deleteTask({...state}, action.payload.type, action.payload.name)
             return stateCopyDelete; 
-            return {...state} 
-
+            
         case 'EDIT_TASK':
-            const stateCopyEdit = editTask({...state}, action.payload.priority, action.payload.number, action.payload.task, action.payload.taskEditCopy)
+            const stateCopyEdit = editTask({...state}, action.payload)
             return stateCopyEdit; 
 
     
@@ -40,6 +38,12 @@ const taskReducer = (state = initialState, action) => {
 
 
 const addTasks = (state, data) => { 
+    state = {
+        unimportant: [], 
+        important: [], 
+        urgent: [], 
+    };
+    
     data.forEach(el => state[el.type].push({name: el.name, checked: el.checked, _id: el._id, userId: el.userId}))
     return state;
 }
@@ -49,7 +53,6 @@ const addTasks = (state, data) => {
 const addNewTask = (state, id, name, type) => {
     state[type].push({name: name.trim(), checked: false, _id: id});
     return state;
-
 }
 
 
@@ -61,28 +64,16 @@ const checkTaskCompletion = (state, type, number) => {
 
 const deleteTask = (state, type, name) => {
     const index = state[type].findIndex(task => task.name === name);
-
-    //const index = state[type].findIndex(el => el._id === number);
     state[type].splice(index, 1);
     return state;
 }
 
 
-
-const editTask = (state, type, number, task, taskEdit) => {
-  
-    if(!task.checked) {
-        
-        if(task.name === taskEdit.name) return;
-
-        else {                        
-            state[type].splice(number, 1, taskEdit);
-            return state
-        }      
-
-    } else return 
-  
+const editTask = (state, payload) => {
+    const {taskEdit, name, priority } = payload;
+    const index = state[priority].findIndex(task => task.name === name); 
+    state[priority][index].name = taskEdit;
+    return state
 }
-
 
 export default taskReducer;

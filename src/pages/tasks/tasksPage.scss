@@ -1,15 +1,19 @@
 .page {
     margin: 0px auto;
     padding: 0px 5%;
+    
 
-    h1 {
-        font-size:30px;
-        text-align: right;
-        text-decoration: underline;
+    span.id {
+        font-size: 18px;
+        text-align: center;
+        color: rgb(105, 105, 196);
+        position: absolute;
+        right: 5%;
+        bottom: 10px;
     }
 
     &-main {
-        margin-top: 30px;
+        margin-top: 40px;
         display:flex;
         justify-content: space-between;
        
@@ -32,14 +36,17 @@
                 color: rgb(230, 30, 30);
                 margin-bottom: 20px;
             }
-        }
+        }        
     }
 
+    .hidden { 
+        opacity: .4;
+    }
+
+    .hide { display:none}
    
 }
 
-.hide {
-    display: none;
-}
+
 
 

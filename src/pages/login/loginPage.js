@@ -62,6 +62,7 @@ export const LoginPage = () => {
     return (
 
         <div className="login">
+
             <div className="login-wrapper">
                 <h2>Log in</h2>
 

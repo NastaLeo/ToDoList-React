@@ -4,7 +4,7 @@
 
     h2 {
         margin: 0px 0px 20px;
-        color: rgb(19, 19, 202);
+        color: rgb(105, 105, 196);
         font-size: 26px;
     }
 
@@ -49,11 +49,11 @@
             margin-bottom: 10px;
             border-radius: 5px;
             outline: none;
-            border: 1px solid blue;
+            border: 1px solid rgb(105, 105, 196);
             cursor: pointer;
 
             &:focus {
-                border: 1.5px solid blue;;
+                border: 1.5px solid rgb(105, 105, 196);
             }
 
             &[type='submit'] {
@@ -61,8 +61,8 @@
                 margin: 10px 0px;
                 width: 60%;
                 height: 35px;
-                background: rgb(99, 99, 240);
-                border: 1px solid rgb(99, 99, 240);
+                background: rgb(105, 105, 196);
+                border: 1px solid rgb(105, 105, 196);
                 color: white;
             }
         } 
@@ -70,11 +70,11 @@
     } 
 
     span.redirect {
-        color: blue;
+        color: rgb(105, 105, 196);
     }
 
     a:focus, a:active, a:visited {
-        color: rgb(19, 19, 202);
+        color: rgb(105, 105, 196);
     }
 
 

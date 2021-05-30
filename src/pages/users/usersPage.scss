@@ -13,7 +13,7 @@
 
         h2 {
             margin: 20px 0px;
-            color: rgb(19, 19, 202);
+            color: rgb(105, 105, 196);
             font-size: 26px;
         }
 
@@ -21,10 +21,10 @@
         input{
             margin-bottom: 20px;
             width: 40%;
-            height: 20px;
+            height: 25px;
             border-radius: 5px;
             outline: none;
-            border: 1px solid blue;
+            border: 1px solid rgb(105, 105, 196);
             text-indent: 10px;
             font-style: italic;
             box-sizing: border-box;
@@ -40,9 +40,14 @@
             border-radius: 5px;
             text-indent: 10px;
             background-color: white;
-            border: 1px solid blue;
+            border: 1px solid rgb(105, 105, 196);
             cursor: pointer;
         }
+    }
+
+    span {
+        color: red;
+        justify-self: left;
     }
 
 

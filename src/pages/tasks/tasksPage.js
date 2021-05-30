@@ -24,7 +24,6 @@ export const TasksPage = () => {
         axios.get('http://localhost:8080/users/userId', {headers: { 'token': localStorage.getItem('token')}})
             .then(response => {
                 if(response.status === 200) {
-                    console.log(response.data)
                     setUserId(response.data);
                     getTasksRequest(response.data)
                 }
@@ -60,26 +59,30 @@ export const TasksPage = () => {
   
 
     const hideShow = (event) => {
-        if(event.target.className !== 'hidden') {
+        if(event.target.className !== 'hidden' && 
+        Array.from(event.target.parentElement.nextElementSibling.children).some(el => el.classList.contains('check'))) {
             event.target.className = 'hidden';
             Array.from(event.target.parentElement.nextElementSibling.children).forEach( el => {
-                if(el.className === 'check') {
+                if(el.classList.contains('check')) {
                     el.classList.add('hide') 
                 }
             })
         } else {
             event.target.className = '';
-            Array.from(event.target.parentElement.nextElementSibling.children).forEach( el => el.classList.remove('hide'))
+            Array.from(event.target.parentElement.nextElementSibling.children).forEach( el => {
+                if(el.classList.contains('hide')){
+                    el.classList.remove('hide')
+                }
+            })
         }
-        
-    } 
+    }
+    
 
 
         
-    return(
+    return (
             <div className="page">
-                <h1>Tasks to be done</h1>
-
+            
                 <div className='page-main'>
 
                     <div className="page-main-col">
@@ -104,6 +107,9 @@ export const TasksPage = () => {
                     </div>
                 
                 </div>               
+                
+                <span className='id'>userid {userId}</span>
+
                 
             </div>
     )

@@ -9,6 +9,7 @@ export const UsersPage = () => {
     const history = useHistory();
 
     const [users, setUsers] = useState([])
+    const [searchUser, setSearchUser] = useState('')
 
     useEffect(() => {
         axios.get('http://localhost:8080/users', {headers: { 'token': localStorage.getItem('token')}})
@@ -23,6 +24,23 @@ export const UsersPage = () => {
 
     }, [])
 
+    
+    const filterUsers = (event) => {
+        setSearchUser(event.target.value);
+    }
+
+
+
+            
+    const results = !searchUser ? users : users.filter(user => { 
+        if(user.name.toLowerCase().includes(searchUser.toLowerCase()) || user.login.toLowerCase().includes(searchUser.toLowerCase())) {
+            return user
+        }
+    })
+    
+    
+  
+
     return (
 
         <div className="users">
@@ -31,15 +49,20 @@ export const UsersPage = () => {
 
             <h2>Active users</h2>
 
-            <input placeholder="Search"/>
+            <input placeholder="Search"
+                   value={searchUser}
+                   onChange={filterUsers}/>
 
-            {users.length > 0 && users.map((user, index) => {
+            {results.map((user, index) => {
                 return(
                     <div className="user"
                          onClick={() => history.push(`/tasks/${user._id}`)}
-                         key={index}>Name : {user.name}, login : {user.login}</div>
+                         key={index}>Name: <b>{user.name}</b>, Login: <b>{user.login}</b></div>
                 )
             })}
+
+            {results.length === 0 && users.length > 0 && <span>You don't have users with such name or login</span>}
+            {results.length === 0 && users.length === 0 && <span>You don't have users yet</span>}
 
             </div>
 
